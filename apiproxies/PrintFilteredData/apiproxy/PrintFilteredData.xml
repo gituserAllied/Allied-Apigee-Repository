@@ -1,0 +1,10 @@
+<APIProxy name="PrintFilteredData" revision="1">
+  <Description>Proxy that filters backend response to only firstName and lastName</Description>
+  <BasePaths>/printfilter</BasePaths>
+  <ProxyEndpoints>
+    <ProxyEndpoint name="default"/>
+  </ProxyEndpoints>
+  <TargetEndpoints>
+    <TargetEndpoint name="default"/>
+  </TargetEndpoints>
+</APIProxy>

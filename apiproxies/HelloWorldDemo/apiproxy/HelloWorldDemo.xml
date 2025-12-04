@@ -1,0 +1,6 @@
+<APIProxy name="HelloWorldDemo" revision="1">
+  <Description>Corrected Hello World proxy for VS Code import</Description>
+  <BasePaths>/demo</BasePaths>
+  <ProxyEndpoints><ProxyEndpoint name="default"/></ProxyEndpoints>
+  <TargetEndpoints><TargetEndpoint name="default"/></TargetEndpoints>
+</APIProxy>

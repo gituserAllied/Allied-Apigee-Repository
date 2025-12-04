@@ -1,0 +1,12 @@
+<ExtractVariables name="ExtractNameFields">
+  <Source>response</Source>
+  <JSONPayload>
+    <Variable name="firstname">
+      <JSONPath>$.firstName</JSONPath>
+    </Variable>
+    <Variable name="lastname">
+      <JSONPath>$.lastName</JSONPath>
+    </Variable>
+  </JSONPayload>
+  <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</ExtractVariables>

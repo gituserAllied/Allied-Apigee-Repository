@@ -1,0 +1,11 @@
+<AssignMessage name="AssignFilteredResponse">
+  <Set>
+    <Payload contentType="application/json">
+      {
+        "firstName": "{firstname}",
+        "lastName": "{lastname}"
+      }
+    </Payload>
+  </Set>
+  <AssignTo type="response"/>
+</AssignMessage>

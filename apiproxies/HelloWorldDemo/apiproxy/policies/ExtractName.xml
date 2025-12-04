@@ -1,0 +1,7 @@
+<ExtractVariables name="ExtractName">
+  <Source>request</Source>
+  <URIQuery>
+    <Variable name="name" default="Guest"/>
+  </URIQuery>
+  <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</ExtractVariables>
