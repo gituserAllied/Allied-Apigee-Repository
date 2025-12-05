@@ -3,20 +3,19 @@
     <BasePath>/demo</BasePath>
     <VirtualHost>default</VirtualHost>
   </HTTPProxyConnection>
-
   <PreFlow name="PreFlow">
-    <Request><Step><Name>ExtractName</Name></Step></Request>
+    <Request/>
     <Response/>
   </PreFlow>
-
   <Flows/>
-
   <PostFlow name="PostFlow">
-    <Response><Step><Name>AssignResponse</Name></Step></Response>
+    <Response>
+      <Step>
+        <Name>AssignResponse</Name>
+      </Step>
+    </Response>
   </PostFlow>
-
-  <RouteRule name="noRoute">
-    <Condition>true</Condition>
-    <TargetEndpoint>default</TargetEndpoint>
+  <RouteRule name="noroute">
+    <Condition>false</Condition>
   </RouteRule>
 </ProxyEndpoint>
