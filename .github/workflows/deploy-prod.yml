@@ -1,15 +1,22 @@
-name: Deploy to Eval (Prod Approval)
+name: Deploy Selected Proxy to Eval (PROD Approval)
 
 on:
-  push:
-    branches:
-      - prod
   workflow_dispatch:
+    inputs:
+      proxy_name:
+        description: "Enter the proxy folder name (example: Reverse-Proxy)"
+        required: true
+        default: "Reverse-Proxy"
+
+      environment:
+        description: "Target Apigee environment"
+        required: true
+        default: "eval"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: prod   # ✅ THIS ENABLES APPROVAL
+    environment: prod   # ✅ Forces manual approval
 
     steps:
       - name: Checkout Repo
@@ -31,23 +38,26 @@ jobs:
           sudo mv apigeecli /usr/local/bin/apigeecli
           apigeecli -v
 
-      - name: Deploy Proxies to Eval (Approved Prod)
+      - name: Deploy Selected Proxy to Eval (After Approval)
         run: |
           TOKEN=$(gcloud auth print-access-token)
 
-          for dir in apiproxies/*; do
-            if [ -d "$dir/apiproxy" ]; then
-              PROXY_NAME=$(basename "$dir")
+          PROXY_NAME="${{ github.event.inputs.proxy_name }}"
+          ENV_NAME="${{ github.event.inputs.environment }}"
 
-              echo "Deploying $PROXY_NAME as PROD (eval)..."
+          echo "Deploying Proxy: $PROXY_NAME"
+          echo "Target Environment: $ENV_NAME"
 
-              apigeecli apis create bundle \
-                --name "$PROXY_NAME" \
-                --proxy-folder "$dir/apiproxy" \
-                --org "${{ secrets.APIGEE_ORG }}" \
-                --env "${{ secrets.APIGEE_ENV }}" \
-                --token "$TOKEN" \
-                --ovr \
-                --wait
-            fi
-          done
+          if [ ! -d "apiproxies/$PROXY_NAME/apiproxy" ]; then
+            echo "❌ Proxy folder not found: apiproxies/$PROXY_NAME/apiproxy"
+            exit 1
+          fi
+
+          apigeecli apis create bundle \
+            --name "$PROXY_NAME" \
+            --proxy-folder "apiproxies/$PROXY_NAME/apiproxy" \
+            --org "${{ secrets.APIGEE_ORG }}" \
+            --env "$ENV_NAME" \
+            --token "$TOKEN" \
+            --ovr \
+            --wait
