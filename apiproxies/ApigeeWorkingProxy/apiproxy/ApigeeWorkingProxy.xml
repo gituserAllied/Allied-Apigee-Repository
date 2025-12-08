@@ -1,0 +1,13 @@
+<APIProxy name="ApigeeWorkingProxy">
+    <DisplayName>ApigeeWorkingProxy</DisplayName>
+    <Description>Test proxy to verify Apigee is working</Description>
+    <Version>1</Version>
+
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+
+    <Policies>
+        <Policy>AssignMessage</Policy>
+    </Policies>
+</APIProxy>

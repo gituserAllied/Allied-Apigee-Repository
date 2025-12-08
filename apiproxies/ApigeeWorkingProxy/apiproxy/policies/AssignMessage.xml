@@ -1,0 +1,11 @@
+<AssignMessage name="AssignMessage">
+    <AssignTo createNew="true" transport="http" type="response"/>
+    <Set>
+        <StatusCode>200</StatusCode>
+        <ReasonPhrase>OK</ReasonPhrase>
+        <Headers>
+            <Header name="Content-Type">text/plain</Header>
+        </Headers>
+        <Payload>✅ Apigee Working Properly</Payload>
+    </Set>
+</AssignMessage>

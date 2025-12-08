@@ -1,0 +1,16 @@
+<ProxyEndpoint name="default">
+    <HTTPProxyConnection>
+        <BasePath>/working</BasePath>
+        <VirtualHost>default</VirtualHost>
+    </HTTPProxyConnection>
+
+    <PreFlow name="PreFlow">
+        <Response>
+            <Step>
+                <Name>AssignMessage</Name>
+            </Step>
+        </Response>
+    </PreFlow>
+
+    <Flows/>
+</ProxyEndpoint>
