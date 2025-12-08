@@ -1,10 +1,10 @@
-name: Deploy Selected Proxy to Eval (PROD Approval)
+name: Deploy Selected Proxy (PROD - Approval Required)
 
 on:
   workflow_dispatch:
     inputs:
       proxy_name:
-        description: "Enter the proxy folder name (example: Reverse-Proxy)"
+        description: "Enter proxy folder name (example: Reverse-Proxy)"
         required: true
         default: "Reverse-Proxy"
 
@@ -14,9 +14,22 @@ on:
         default: "eval"
 
 jobs:
-  deploy:
+  branch-protection-check:
     runs-on: ubuntu-latest
-    environment: prod   # ✅ Forces manual approval
+    steps:
+      - name: Ensure this workflow runs ONLY from prod branch
+        run: |
+          echo "Triggered from branch: $GITHUB_REF"
+
+          if [[ "$GITHUB_REF" != "refs/heads/prod" ]]; then
+            echo "❌ ERROR: Production deployment is only allowed from the 'prod' branch."
+            exit 1
+          fi
+
+  deploy:
+    needs: branch-protection-check
+    runs-on: ubuntu-latest
+    environment: prod   # ✅ GitHub approval still required
 
     steps:
       - name: Checkout Repo
@@ -38,13 +51,14 @@ jobs:
           sudo mv apigeecli /usr/local/bin/apigeecli
           apigeecli -v
 
-      - name: Deploy Selected Proxy to Eval (After Approval)
+      - name: Deploy Selected Proxy (PROD After Approval)
         run: |
           TOKEN=$(gcloud auth print-access-token)
 
           PROXY_NAME="${{ github.event.inputs.proxy_name }}"
           ENV_NAME="${{ github.event.inputs.environment }}"
 
+          echo "✅ Approved for PROD Deploy"
           echo "Deploying Proxy: $PROXY_NAME"
           echo "Target Environment: $ENV_NAME"
 
