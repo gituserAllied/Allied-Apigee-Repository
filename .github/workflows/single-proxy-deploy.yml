@@ -1,0 +1,75 @@
+name: Deploy Single Proxy 
+
+on:
+  workflow_dispatch:
+    inputs:
+      proxy_name:
+        description: "Enter the proxy folder name from apiproxies (e.g. Reverse-Proxy)"
+        required: true
+        type: string
+
+      deploy_env:
+        description: "Enter Apigee environment (dev / test / eval / prod)"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Authenticate Service Account
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Install apigeecli and jq
+        run: |
+          export APIGEECLI_VERSION=v2.16.0
+          echo "Installing apigeecli version: $APIGEECLI_VERSION"
+
+          curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash || true
+          sudo cp $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
+          sudo chmod +x /usr/local/bin/apigeecli
+
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+          apigeecli -v
+
+      - name: Deploy Selected Proxy
+        run: |
+          TOKEN=$(gcloud auth print-access-token)
+
+          PROXY_NAME="${{ github.event.inputs.proxy_name }}"
+          DEPLOY_ENV="${{ github.event.inputs.deploy_env }}"
+
+          echo "----------------------------------------"
+          echo "DEPLOYING PROXY: $PROXY_NAME"
+          echo "DEPLOYING TO ENV: $DEPLOY_ENV"
+          echo "ORG: ${{ secrets.APIGEE_ORG }}"
+          echo "----------------------------------------"
+
+          if [ ! -d "apiproxies/$PROXY_NAME/apiproxy" ]; then
+            echo "❌ Proxy folder not found: apiproxies/$PROXY_NAME/apiproxy"
+            exit 1
+          fi
+
+          apigeecli apis create bundle \
+            --name "$PROXY_NAME" \
+            --proxy-folder "apiproxies/$PROXY_NAME/apiproxy" \
+            --org "${{ secrets.APIGEE_ORG }}" \
+            --env "$DEPLOY_ENV" \
+            --token "$TOKEN" \
+            --ovr \
+            --wait
+
+          echo "✅ Deployment completed successfully"
