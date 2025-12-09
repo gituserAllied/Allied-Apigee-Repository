@@ -1,4 +1,4 @@
-name: Deploy to Main Environment
+name: Deploy to Eval Environment
 
 on:
   workflow_dispatch:
@@ -8,20 +8,10 @@ on:
         required: true
         type: string
 
-      environment:
-        description: "Select Environment"
-        required: true
-        type: choice
-        options:
-          - dev
-          - test
-          - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    environment: ${{ github.event.inputs.environment }}
+    environment: eval
 
     steps:
       - name: Checkout Repository
@@ -50,7 +40,7 @@ jobs:
       - name: Set Variables
         run: |
           echo "PROXY_NAME=${{ github.event.inputs.proxy_name }}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=eval" >> $GITHUB_ENV
 
       - name: Display Inputs
         run: |
@@ -65,7 +55,7 @@ jobs:
       - name: Install Apigee CLI
         run: npm install -g apigeetool
 
-      - name: Deploy Proxy to Apigee
+      - name: Deploy Proxy to Apigee (EVAL)
         run: |
           apigeetool deployproxy \
           -u "${{ secrets.APIGEE_USERNAME }}" \
