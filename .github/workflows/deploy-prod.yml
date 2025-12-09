@@ -1,71 +1,71 @@
-name: Deploy to PROD (Approval Required)
+name: ✅ Approved Production Deployment
 
 on:
   workflow_dispatch:
     inputs:
       proxy_name:
-        description: "Enter API Proxy Name (Example: REVERSE-proxy)"
+        description: "Enter Apigee Proxy Name (example: REVERSE-proxy)"
         required: true
         type: string
 
-      target_env:
-        description: "Select Target Environment"
+      deploy_env:
+        description: "Enter Environment Name (use: eval)"
         required: true
-        type: choice
-        options:
-          - eval
-          - prod01
-          - prod02
+        default: "eval"
+        type: string
 
 jobs:
   deploy:
-    name: Approved Production Deployment
+    name: 🚀 Deploy to PROD with Approval
     runs-on: ubuntu-latest
 
-    # ✅ This enables approval gate using GitHub Environment
-    environment: PROD
+    # ✅ THIS ENABLES MANUAL APPROVAL
+    environment: prod
 
     steps:
+
+      # ✅ STEP 1: CHECKOUT REPO
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-
+      # ✅ STEP 2: AUTH → GCP SERVICE ACCOUNT
       - name: Authenticate Service Account
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # ✅ STEP 3: SETUP GCLOUD
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # ✅ STEP 4: INSTALL APIGEE CLI ✅ FIXED
       - name: Install Apigee CLI
         run: |
           curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash
           sudo cp $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
           sudo chmod +x /usr/local/bin/apigeecli
-          apigeecli version
+          apigeecli --version || apigeecli help
 
+      # ✅ STEP 5: DEPLOY ONLY SELECTED PROXY
       - name: Deploy Selected Proxy to PROD
         run: |
+          echo "======================================"
+          echo "Deploying Proxy: ${{ github.event.inputs.proxy_name }}"
+          echo "Environment:     ${{ github.event.inputs.deploy_env }}"
+          echo "Org:             ${{ secrets.APIGEE_ORG }}"
+          echo "======================================"
+
           TOKEN=$(gcloud auth print-access-token)
 
-          PROXY="${{ inputs.proxy_name }}"
-          ENV="${{ inputs.target_env }}"
-
-          echo "--------------------------------------"
-          echo "Deploying Proxy  : $PROXY"
-          echo "Target Env      : $ENV"
-          echo "Apigee Org      : ${{ secrets.APIGEE_ORG }}"
-          echo "--------------------------------------"
-
           apigeecli apis create bundle \
-            --name "$PROXY" \
-            --proxy-folder "apiproxies/$PROXY/apiproxy" \
+            --name "${{ github.event.inputs.proxy_name }}" \
+            --proxy-folder "apiproxies/${{ github.event.inputs.proxy_name }}/apiproxy" \
             --org "${{ secrets.APIGEE_ORG }}" \
-            --env "$ENV" \
+            --env "${{ github.event.inputs.deploy_env }}" \
             --token "$TOKEN" \
             --ovr \
             --wait
 
-          echo "✅ SUCCESS: Proxy deployed to PROD"
+          echo "✅ PRODUCTION DEPLOYMENT SUCCESSFUL"
