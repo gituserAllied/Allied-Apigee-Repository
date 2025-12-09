@@ -1,52 +1,57 @@
-name: Deploy to Eval (Main Branch)
+name: Deploy to Main Environment
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      proxy_name:
+        description: "Enter Proxy Name"
+        required: true
+        type: string
+
+      environment:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - test
+          - main
 
 jobs:
   deploy:
+    name: Deploy Proxy to Main
     runs-on: ubuntu-latest
 
+    environment: ${{ github.event.inputs.environment }}
+
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-      - name: Install apigeecli
+      - name: Set Variables
         run: |
-          curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash
-          sudo mv apigeecli /usr/local/bin/apigeecli
-          apigeecli -v
+          echo "PROXY_NAME=${{ github.event.inputs.proxy_name }}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
-      - name: Deploy Proxies to Eval (Auto)
+      - name: Display Inputs
         run: |
-          TOKEN=$(gcloud auth print-access-token)
+          echo "Deploying Proxy: $PROXY_NAME"
+          echo "Target Environment: $ENVIRONMENT"
 
-          for dir in apiproxies/*; do
-            if [ -d "$dir/apiproxy" ]; then
-              PROXY_NAME=$(basename "$dir")
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-              echo "Deploying $PROXY_NAME to eval..."
+      - name: Install Apigee CLI
+        run: npm install -g apigeetool
 
-              apigeecli apis create bundle \
-                --name "$PROXY_NAME" \
-                --proxy-folder "$dir/apiproxy" \
-                --org "${{ secrets.APIGEE_ORG }}" \
-                --env "${{ secrets.APIGEE_ENV }}" \
-                --token "$TOKEN" \
-                --ovr \
-                --wait
-            fi
-          done
+      - name: Deploy Proxy to Apigee
+        run: |
+          apigeetool deployproxy \
+          -u "${{ secrets.APIGEE_USERNAME }}" \
+          -p "${{ secrets.APIGEE_PASSWORD }}" \
+          -o "${{ secrets.APIGEE_ORG }}" \
+          -e "$ENVIRONMENT" \
+          -n "$PROXY_NAME" \
+          -d "./apiproxy"
