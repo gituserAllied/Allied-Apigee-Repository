@@ -8,11 +8,14 @@ on:
         required: true
         type: string
 
-      deploy_env:
-        description: "Enter Environment Name (use: eval)"
+      environment:
+        description: "Select Environment"
         required: true
-        default: "eval"
-        type: string
+        type: choice
+        options:
+          - dev
+          - test
+          - main
 
 jobs:
   deploy:
