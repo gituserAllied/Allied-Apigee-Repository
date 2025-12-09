@@ -13,9 +13,9 @@ on:
         required: true
         type: choice
         options:
-          - dev
-          - test
-          - main
+          - eval
+          - prod1
+          - prod2
 
 jobs:
   deploy:
