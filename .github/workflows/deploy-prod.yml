@@ -1,25 +1,23 @@
-name: Deploy Selected Proxy to Eval (PROD Approval)
+name: Deploy to PROD (Approval Required)
 
 on:
   workflow_dispatch:
     inputs:
       proxy_name:
-        description: "Enter the proxy folder name (example: Reverse-Proxy)"
+        description: "Enter Proxy Name to Deploy (folder inside apiproxies)"
         required: true
-        default: "Reverse-Proxy"
-
-      environment:
-        description: "Target Apigee environment"
-        required: true
-        default: "eval"
+        type: string
 
 jobs:
   deploy:
+    name: Deploy Proxy to PROD
     runs-on: ubuntu-latest
-    environment: prod   # ✅ Forces manual approval
+
+    # ✅ THIS IS WHERE APPROVAL HAPPENS
+    environment: PROD
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Authenticate to Google Cloud
@@ -32,32 +30,26 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Install apigeecli
+      - name: Install Apigee CLI
         run: |
           curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash
-          sudo mv apigeecli /usr/local/bin/apigeecli
+          sudo mv $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
           apigeecli -v
 
-      - name: Deploy Selected Proxy to Eval (After Approval)
+      - name: Deploy Selected Proxy to PROD
         run: |
+          echo "✅ Deploying Proxy: ${{ inputs.proxy_name }}"
+          echo "✅ Target Environment: ${{ secrets.APIGEE_ENV }}"
+
           TOKEN=$(gcloud auth print-access-token)
 
-          PROXY_NAME="${{ github.event.inputs.proxy_name }}"
-          ENV_NAME="${{ github.event.inputs.environment }}"
-
-          echo "Deploying Proxy: $PROXY_NAME"
-          echo "Target Environment: $ENV_NAME"
-
-          if [ ! -d "apiproxies/$PROXY_NAME/apiproxy" ]; then
-            echo "❌ Proxy folder not found: apiproxies/$PROXY_NAME/apiproxy"
-            exit 1
-          fi
-
           apigeecli apis create bundle \
-            --name "$PROXY_NAME" \
-            --proxy-folder "apiproxies/$PROXY_NAME/apiproxy" \
+            --name "${{ inputs.proxy_name }}" \
+            --proxy-folder "apiproxies/${{ inputs.proxy_name }}/apiproxy" \
             --org "${{ secrets.APIGEE_ORG }}" \
-            --env "$ENV_NAME" \
+            --env "${{ secrets.APIGEE_ENV }}" \
             --token "$TOKEN" \
             --ovr \
             --wait
+
+          echo "✅ PROD Deployment Completed Successfully"
