@@ -4,52 +4,68 @@ on:
   workflow_dispatch:
     inputs:
       proxy_name:
-        description: "Enter Proxy Name to Deploy (folder inside apiproxies)"
+        description: "Enter API Proxy Name (Example: REVERSE-proxy)"
         required: true
         type: string
 
+      target_env:
+        description: "Select Target Environment"
+        required: true
+        type: choice
+        options:
+          - eval
+          - dev
+          - prod
+
 jobs:
   deploy:
-    name: Deploy Proxy to PROD
+    name: Approved Production Deployment
     runs-on: ubuntu-latest
 
-    # ✅ THIS IS WHERE APPROVAL HAPPENS
+    # ✅ This enables approval gate using GitHub Environment
     environment: PROD
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup gcloud
+      - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Authenticate Service Account
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: Install Apigee CLI
         run: |
           curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash
-          sudo mv $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
-          apigeecli -v
+          sudo cp $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
+          sudo chmod +x /usr/local/bin/apigeecli
+          apigeecli version
 
       - name: Deploy Selected Proxy to PROD
         run: |
-          echo "✅ Deploying Proxy: ${{ inputs.proxy_name }}"
-          echo "✅ Target Environment: ${{ secrets.APIGEE_ENV }}"
-
           TOKEN=$(gcloud auth print-access-token)
 
+          PROXY="${{ inputs.proxy_name }}"
+          ENV="${{ inputs.target_env }}"
+
+          echo "--------------------------------------"
+          echo "Deploying Proxy  : $PROXY"
+          echo "Target Env      : $ENV"
+          echo "Apigee Org      : ${{ secrets.APIGEE_ORG }}"
+          echo "--------------------------------------"
+
           apigeecli apis create bundle \
-            --name "${{ inputs.proxy_name }}" \
-            --proxy-folder "apiproxies/${{ inputs.proxy_name }}/apiproxy" \
+            --name "$PROXY" \
+            --proxy-folder "apiproxies/$PROXY/apiproxy" \
             --org "${{ secrets.APIGEE_ORG }}" \
-            --env "${{ secrets.APIGEE_ENV }}" \
+            --env "$ENV" \
             --token "$TOKEN" \
             --ovr \
             --wait
 
-          echo "✅ PROD Deployment Completed Successfully"
+          echo "✅ SUCCESS: Proxy deployed to PROD"
