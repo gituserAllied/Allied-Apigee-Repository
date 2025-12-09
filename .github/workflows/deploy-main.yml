@@ -13,9 +13,9 @@ on:
         required: true
         type: choice
         options:
-          - dev
+          - eval
           - test
-          - main
+          - sandbox
 
 jobs:
   deploy:
