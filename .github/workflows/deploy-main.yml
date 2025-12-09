@@ -1,66 +1,70 @@
-name: Deploy to Eval Environment
+name: 🚀 Deploy to Eval/Test (Main Branch)
 
 on:
   workflow_dispatch:
     inputs:
       proxy_name:
-        description: "Enter Proxy Name"
+        description: "Enter Apigee Proxy Name (example: REVERSE-proxy)"
         required: true
         type: string
 
+      deploy_env:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - eval
+          - test
+
 jobs:
   deploy:
+    name: 🚀 Deploy to Eval/Test (NO Approval)
     runs-on: ubuntu-latest
-    environment: eval
 
     steps:
+
+      # ✅ STEP 1: CHECKOUT REPO
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # ✅ FAIL FAST IF ANY SECRET IS MISSING
-      - name: Validate Apigee Secrets
-        run: |
-          if [ -z "${{ secrets.APIGEE_USERNAME }}" ]; then
-            echo "❌ APIGEE_USERNAME secret is MISSING"
-            exit 1
-          fi
-
-          if [ -z "${{ secrets.APIGEE_PASSWORD }}" ]; then
-            echo "❌ APIGEE_PASSWORD secret is MISSING"
-            exit 1
-          fi
-
-          if [ -z "${{ secrets.APIGEE_ORG }}" ]; then
-            echo "❌ APIGEE_ORG secret is MISSING"
-            exit 1
-          fi
-
-          echo "✅ All Apigee secrets found"
-
-      - name: Set Variables
-        run: |
-          echo "PROXY_NAME=${{ github.event.inputs.proxy_name }}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=eval" >> $GITHUB_ENV
-
-      - name: Display Inputs
-        run: |
-          echo "Deploying Proxy: $PROXY_NAME"
-          echo "Target Environment: $ENVIRONMENT"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # ✅ STEP 2: AUTH → GCP SERVICE ACCOUNT
+      - name: Authenticate Service Account
+        uses: google-github-actions/auth@v2
         with:
-          node-version: 18
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # ✅ STEP 3: SETUP GCLOUD
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # ✅ STEP 4: INSTALL APIGEE CLI
       - name: Install Apigee CLI
-        run: npm install -g apigeetool
-
-      - name: Deploy Proxy to Apigee (EVAL)
         run: |
-          apigeetool deployproxy \
-          -u "${{ secrets.APIGEE_USERNAME }}" \
-          -p "${{ secrets.APIGEE_PASSWORD }}" \
-          -o "${{ secrets.APIGEE_ORG }}" \
-          -e "$ENVIRONMENT" \
-          -n "$PROXY_NAME" \
-          -d "./apiproxy"
+          curl -L https://raw.githubusercontent.com/apigee/apigeecli/main/downloadLatest.sh | bash
+          sudo cp $HOME/.apigeecli/bin/apigeecli /usr/local/bin/apigeecli
+          sudo chmod +x /usr/local/bin/apigeecli
+          apigeecli --version || apigeecli help
+
+      # ✅ STEP 5: DEPLOY ONLY SELECTED PROXY
+      - name: Deploy Selected Proxy to Eval/Test
+        run: |
+          echo "======================================"
+          echo "Deploying Proxy: ${{ github.event.inputs.proxy_name }}"
+          echo "Environment:     ${{ github.event.inputs.deploy_env }}"
+          echo "Org:             ${{ secrets.APIGEE_ORG }}"
+          echo "======================================"
+
+          TOKEN=$(gcloud auth print-access-token)
+
+          apigeecli apis create bundle \
+            --name "${{ github.event.inputs.proxy_name }}" \
+            --proxy-folder "apiproxies/${{ github.event.inputs.proxy_name }}/apiproxy" \
+            --org "${{ secrets.APIGEE_ORG }}" \
+            --env "${{ github.event.inputs.deploy_env }}" \
+            --token "$TOKEN" \
+            --ovr \
+            --wait
+
+          echo "✅ DEV / TEST DEPLOYMENT SUCCESSFUL"
