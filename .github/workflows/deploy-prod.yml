@@ -51,12 +51,12 @@ jobs:
           sudo chmod +x /usr/local/bin/apigeecli
           apigeecli --version || apigeecli help
 
-      # ✅ STEP 5: DEPLOY ONLY SELECTED PROXY
-      - name: Deploy Selected Proxy to PROD
+      # ✅ STEP 5: CREATE + DEPLOY SELECTED PROXY ✅ FIXED
+      - name: Deploy Selected Proxy to Selected Environment
         run: |
           echo "======================================"
           echo "Deploying Proxy: ${{ github.event.inputs.proxy_name }}"
-          echo "Environment:     ${{ github.event.inputs.deploy_env }}"
+          echo "Environment:     ${{ github.event.inputs.environment }}"
           echo "Org:             ${{ secrets.APIGEE_ORG }}"
           echo "======================================"
 
@@ -66,7 +66,7 @@ jobs:
             --name "${{ github.event.inputs.proxy_name }}" \
             --proxy-folder "apiproxies/${{ github.event.inputs.proxy_name }}/apiproxy" \
             --org "${{ secrets.APIGEE_ORG }}" \
-            --env "${{ github.event.inputs.deploy_env }}" \
+            --env "${{ github.event.inputs.environment }}" \
             --token "$TOKEN" \
             --ovr \
             --wait
