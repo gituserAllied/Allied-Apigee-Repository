@@ -13,13 +13,12 @@ on:
         required: true
         type: choice
         options:
-          - eval
+          - dev
           - test
-          - sandbox
+          - main
 
 jobs:
   deploy:
-    name: Deploy Proxy to Main
     runs-on: ubuntu-latest
 
     environment: ${{ github.event.inputs.environment }}
@@ -27,6 +26,26 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      # ✅ FAIL FAST IF ANY SECRET IS MISSING
+      - name: Validate Apigee Secrets
+        run: |
+          if [ -z "${{ secrets.APIGEE_USERNAME }}" ]; then
+            echo "❌ APIGEE_USERNAME secret is MISSING"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.APIGEE_PASSWORD }}" ]; then
+            echo "❌ APIGEE_PASSWORD secret is MISSING"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.APIGEE_ORG }}" ]; then
+            echo "❌ APIGEE_ORG secret is MISSING"
+            exit 1
+          fi
+
+          echo "✅ All Apigee secrets found"
 
       - name: Set Variables
         run: |
