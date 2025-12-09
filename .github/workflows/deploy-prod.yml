@@ -14,8 +14,8 @@ on:
         type: choice
         options:
           - eval
-          - dev
-          - prod
+          - prod01
+          - prod02
 
 jobs:
   deploy:
