@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest name="manifest">
+    <Policies>
+        <VersionInfo resourceName="JS-REGEXVALIDATOR" version="SHA-512:0512ea8ff2e924fa76c6a4c4e2199c5d087ed8d6b81ceb2450b3c09382a11f6d3c6bb6db22fa313f41aeb88b7d06696f4f3462b2d1b3d85710eee3d1983da9b9"/>
+        <VersionInfo resourceName="JTP-JSON-THREATPROTECTION" version="SHA-512:74dfdaeee41b10fc1e4f1bc931f7907e9ae0ce2a63d321bddd627774d9db510ff37bb2fab2a3006675be6fbb165d52bfdf630e739d28b2ea162eeb797d654684"/>
+        <VersionInfo resourceName="REP-SQL-INJECTION" version="SHA-512:da9f1a6175686bc2cdf94bb8cc3a9b2d159ed9ee197dd87c5b7a56400e90b0d5accf06df4e4b979af9a1150bb1dc82ab9b18b2a6585189f59eb2369afd2d8862"/>
+        <VersionInfo resourceName="RF-INVALID_PAYLOAD" version="SHA-512:752dc18c1cfc716735c6a3c7108ca91567f73e7a3c5cc549bceac98ea049d7a0cb6cbf8848327feaee25a1e5eca5c46134b80101fc1eb886c14d876591848871"/>
+        <VersionInfo resourceName="XTP-XML-THREATPROTECTION" version="SHA-512:c6e92dbc6a8e2dc656caa7af3540e5fdd89d2cb0123ef4c84eadf1decf2e19f3547a28c95358008b6afb1a873807203c30a34c47c87e3a6c9350e0b0469817da"/>
+    </Policies>
+    <ProxyEndpoints/>
+    <Resources>
+        <VersionInfo resourceName="jsc://REGEXVALIDATOR.js" version="SHA-512:d1dd6a401399eb9b756a6271053c62e83c94de3d056f14688d5ae2d4f1081c727c05ad71e400efc9e638002b53c2f944f7a5c680b06f7933263550285e98107e"/>
+    </Resources>
+    <SharedFlows>
+        <VersionInfo resourceName="default" version="SHA-512:3d3cbce9ff9fe773f9368c139092d70599ae03367af8e16c809a1bb154f6e1e0e15a902950d817c559c5a029b2fe97cd84ab441b6f6054b113282cb2c2511ed7"/>
+    </SharedFlows>
+    <TargetEndpoints/>
+</Manifest>

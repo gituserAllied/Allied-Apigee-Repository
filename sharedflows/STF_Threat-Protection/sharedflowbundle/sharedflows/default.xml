@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SharedFlow name="default">
+    <Step>
+        <Name>JS-REGEXVALIDATOR</Name>
+        <Condition>(security.ThreatProtection.Enable == "true") and (security.ThreatProtection.RegularExpression == "true")</Condition>
+    </Step>
+    <Step>
+        <Name>REP-SQL-INJECTION</Name>
+        <Condition>(security.ThreatProtection.Enable == "true") and (security.ThreatProtection.SQLInjection == "true")</Condition>
+    </Step>
+    <Step>
+        <Name>JTP-JSON-THREATPROTECTION</Name>
+        <Condition>(request.content != null) and ((security.ThreatProtection.Enable == "true") and (security.ThreatProtection.ContentValidation == "true")) and (request.header.content-type == "application/json") || (request.header.content-type == "text/json")</Condition>
+    </Step>
+    <Step>
+        <Name>XTP-XML-THREATPROTECTION</Name>
+        <Condition>(request.content != null) and ((security.ThreatProtection.Enable == "true") and (security.ThreatProtection.ContentValidation == "true")) and  (request.header.content-type == "application/xml") || (request.header.content-type == "text/xml")</Condition>
+    </Step>
+</SharedFlow>

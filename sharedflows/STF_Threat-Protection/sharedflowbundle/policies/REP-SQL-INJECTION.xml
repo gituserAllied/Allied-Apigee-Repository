@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RegularExpressionProtection async="false" continueOnError="false" enabled="true" name="REP-SQL-INJECTION">
+    <DisplayName>REP-SQL-INJECTION</DisplayName>
+    <Properties/>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <Properties/>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <JSONPayload>
+        <JSONPath>
+            <Expression>$.</Expression>
+            <Pattern>.*?Exception in thread.*?</Pattern>
+            <!--<Pattern>[\s]*(?i)((delete)|(exec )|(drop)|(insert)|(shutdown)|(update)|(\bor\b))</Pattern>-->
+            <Pattern>(?i)((select\s[0-9a-zA-Z,* ]{1,999}\sfrom)|(delete\sfrom)|(delete\stable)|(exec )|(drop\stable)|(drop\sdatabase)|(truncate\stable)|(insert\sinto)|(shutdown)|(update\s[0-9a-zA-Z_-]{1,999}\sset)|(alter\stable)|(\bor\s\b))[\s]+</Pattern>
+            <Pattern>&lt;\s*script\b[^&gt;]*&gt;[^&lt;]+&lt;\s*\/\s*script\s*&gt;</Pattern>
+            <Pattern>&lt;!--#(include|exec |echo|config|printenv)\s+.*?</Pattern>
+            <Pattern>/?(ancestor(-or-self)?|descendant(-or-self)?|following(-sibling))</Pattern>
+            <Pattern>[\s]*((select\s[0-9a-zA-Z,* ]{1,999}\sfrom)|(delete\sfrom)|(delete\stable)|(exec )|(drop\stable)|(drop\sdatabase)|(truncate\stable)|(insert\sinto)|(shutdown)|(update\s[0-9a-zA-Z_-]{1,999}\sset)|(alter\stable)|(\bor\b))</Pattern>
+        </JSONPath>
+    </JSONPayload>
+    <URIPath>
+        <Pattern>.*?Exception in thread.*?</Pattern>
+        <Pattern>(?i)((select\s[0-9a-zA-Z,* ]{1,999}\sfrom)|(delete\sfrom)|(delete\stable)|(exec )|(drop\stable)|(drop\sdatabase)|(truncate\stable)|(insert\sinto)|(shutdown)|(update\s[0-9a-zA-Z_-]{1,999}\sset)|(alter\stable)|(\bor\b))[\s]+</Pattern>
+        <Pattern>&lt;\s*script\b[^&gt;]*&gt;[^&lt;]+&lt;\s*\/\s*script\s*&gt;</Pattern>
+        <Pattern>&lt;!--#(include|exec |echo|config|printenv)\s+.*?</Pattern>
+        <Pattern>/?(ancestor(-or-self)?|descendant(-or-self)?|following(-sibling))</Pattern>
+        <Pattern>n\s*\\\\\s*slash</Pattern>
+        <Pattern>n\s*\/\s*slash</Pattern>
+        <Pattern>n\s*\\"\s*quotes</Pattern>
+        <Pattern>n\s*\\b\s*space</Pattern>
+        <Pattern>n\s*\\f\s*forwardfeed</Pattern>
+        <Pattern>n\s*\\n\s*newline</Pattern>
+        <Pattern>n\s*\\r\s*carria</Pattern>
+        <Pattern>n\s*\\t\s*tab</Pattern>
+        <Pattern>n\s*\\uFFFF\s*hex</Pattern>
+    </URIPath>
+    <Source>request</Source>
+    <XMLPayload>
+        <Namespaces/>
+        <XPath>
+            <Expression>/*</Expression>
+            <Pattern>.*?Exception in thread.*?</Pattern>
+            <Pattern>(?i)((select\s[0-9a-zA-Z,* ]{1,999}\sfrom)|(delete\sfrom)|(delete\stable)|(exec )|(drop\stable)|(drop\sdatabase)|(truncate\stable)|(insert\sinto)|(shutdown)|(update\s[0-9a-zA-Z_-]{1,999}\sset)|(alter\stable)|(\bor\s\b))[\s]+</Pattern>
+            <Pattern>&lt;\s*script\b[^&gt;]*&gt;[^&lt;]+&lt;\s*\/\s*script\s*&gt;</Pattern>
+            <Pattern>&lt;!--#(?i)(include|exec |echo|config|printenv)\s+.*?</Pattern>
+            <Pattern>/?(ancestor(-or-self)?|descendant(-or-self)?|following(-sibling))</Pattern>
+            <Pattern>n\s*\\\\\s*slash</Pattern>
+            <Pattern>n\s*\/\s*slash</Pattern>
+            <Pattern>n\s*\\"\s*quotes</Pattern>
+            <Pattern>n\s*\\b\s*space</Pattern>
+            <Pattern>n\s*\\f\s*forwardfeed</Pattern>
+            <Pattern>n\s*\\n\s*newline</Pattern>
+            <Pattern>n\s*\\r\s*carria</Pattern>
+            <Pattern>n\s*\\t\s*tab</Pattern>
+            <Pattern>n\s*\\uFFFF\s*hex</Pattern>
+            <Type>string</Type>
+        </XPath>
+    </XMLPayload>
+</RegularExpressionProtection>

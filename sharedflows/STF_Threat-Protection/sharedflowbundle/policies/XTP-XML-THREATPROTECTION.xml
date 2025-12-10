@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<XMLThreatProtection async="false" continueOnError="false" enabled="true" name="XTP-XML-THREATPROTECTION">
+    <DisplayName>XTP-XML-THREATPROTECTION</DisplayName>
+    <Properties/>
+    <NameLimits>
+        <Element>200</Element>
+        <Attribute>35</Attribute>
+        <NamespacePrefix>35</NamespacePrefix>
+        <ProcessingInstructionTarget>35</ProcessingInstructionTarget>
+    </NameLimits>
+    <Source>request</Source>
+    <StructureLimits>
+        <NodeDepth>15</NodeDepth>
+        <AttributeCountPerElement>30</AttributeCountPerElement>
+        <NamespaceCountPerElement>13</NamespaceCountPerElement>
+        <ChildCount includeComment="true" includeElement="true" includeProcessingInstruction="true" includeText="true">3500</ChildCount>
+    </StructureLimits>
+    <ValueLimits>
+        <Text>-1</Text>
+        <Attribute>-1</Attribute>
+        <NamespaceURI>-1</NamespaceURI>
+        <Comment>-1</Comment>
+        <ProcessingInstructionData>-1</ProcessingInstructionData>
+    </ValueLimits>
+</XMLThreatProtection>

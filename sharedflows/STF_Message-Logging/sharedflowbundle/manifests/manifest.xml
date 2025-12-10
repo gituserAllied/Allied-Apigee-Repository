@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest name="manifest">
+    <Policies>
+        <VersionInfo resourceName="JS-DefaultMesageLogging" version="SHA-512:32db7bdc9ec93545b75bda964e8489e059b51205a9905c62ed2de26c983d97f550150b6465cfe6f9f25798fb2d68fa812fe0235e9b9e4289c5d6a8fbeb9551e0"/>
+        <VersionInfo resourceName="ML-MessageLogging" version="SHA-512:51ee1790bde7e4ee192a3eb7b4dfbc3fc7a52b299a6dea414b12459b9c3954bf2333c53c96084ed89663fe9081c44661d8bb8a7ad9843e5e082fef1d70503c9a"/>
+    </Policies>
+    <ProxyEndpoints/>
+    <Resources>
+        <VersionInfo resourceName="jsc://DefaultMesageLogging.js" version="SHA-512:fa3a4208f8e41d0e32768892f39ba06b4551d4e9ed12411687775dcc4c0d539365d48407590d146fcd57cbb05fdc0e305a37e55728ebd7a70cb6f50d0da3e5fb"/>
+    </Resources>
+    <SharedFlows>
+        <VersionInfo resourceName="default" version="SHA-512:bc6f3227483a61d801056a6a413bae5aa90ca36097a4e2841cd6d81db227a418ac464a64c6abe85df6034d21dd670e3272a9943ff8f913716eb112bc70026fee"/>
+    </SharedFlows>
+    <TargetEndpoints/>
+</Manifest>

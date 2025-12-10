@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SharedFlowBundle revision="1" name="STF_Message-Logging">
+    <ConfigurationVersion majorVersion="4" minorVersion="0"/>
+    <CreatedAt>1761653964358</CreatedAt>
+    <CreatedBy>khushi.nirmal@ext.icicibank.com</CreatedBy>
+    <Description>undefined</Description>
+    <DisplayName>STF_Message-Logging</DisplayName>
+    <LastModifiedAt>1761654482677</LastModifiedAt>
+    <LastModifiedBy>khushi.nirmal@ext.icicibank.com</LastModifiedBy>
+    <ManifestVersion>SHA-512:a254d0549f59b2ddff543750b93766889069784526b847ae6ed5b37873a9a841f21e1c9f935320373a2a96c550173c336830767606acf4fc1c807ba993692a0e</ManifestVersion>
+    <Policies>
+        <Policy>JS-DefaultMesageLogging</Policy>
+        <Policy>ML-MessageLogging</Policy>
+    </Policies>
+    <Resources>
+        <Resource>jsc://DefaultMesageLogging.js</Resource>
+    </Resources>
+    <Spec></Spec>
+    <subType>SharedFlow</subType>
+    <SharedFlows>
+        <SharedFlow>default</SharedFlow>
+    </SharedFlows>
+</SharedFlowBundle>
